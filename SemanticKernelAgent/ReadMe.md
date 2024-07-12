@@ -21,3 +21,7 @@ dotnet add package Microsoft.SemanticKernel
   "LightsOnlinePluginURL": "http://localhost:7168/api/swagger.json" //Azure function app swagger url- SemanticKernelAgent.OpenAPI.Plugins 
 }
 ```
+# TODO: Mixed chat agents conversation
+
+# TODO: Open AI assistant
+# TODO: Memory, Embedding
