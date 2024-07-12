@@ -18,4 +18,8 @@ Exploring Semantic Kernel SDK framework
 
 # TODO: Mixed chat agents conversation
 # TODO: Open AI assistant
-# TODO: Memory, Embedding
+# TODO: Memory, Embedding (RAG)
+# TODO: Copilot
+# TODO: Pytorch model
+# TODO: Tensorflow model
+
