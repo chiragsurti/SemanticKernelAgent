@@ -14,3 +14,8 @@ Exploring Semantic Kernel SDK framework
 1. Run Azure function app project - SemanticKernelAgent.OpenAPI.Plugins
 2. Run SemanticKernelAgent Console app
 
+
+
+# TODO: Mixed chat agents conversation
+# TODO: Open AI assistant
+# TODO: Memory, Embedding
