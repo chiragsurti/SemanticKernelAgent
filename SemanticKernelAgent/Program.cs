@@ -4,6 +4,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Plugins.OpenApi;
 using System.Net;
+using System;
 
 namespace rest_client
 {
@@ -65,14 +66,71 @@ namespace rest_client
                 }
                 kernel.Plugins.AddFromType<TimeInformationPlugin>();
 
-                // Enable planning
+                
                 OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
                 {
-                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+                    //ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions // Auto invoke kernel functions
+                    ToolCallBehavior = ToolCallBehavior.EnableKernelFunctions // Function callling need to use when you are looking for planner
                 };
 
                 // Create a history store the conversation
                 var history = new ChatHistory();
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("---- Planner with Functional calling ------");
+                //Planner message with Functional calling
+                history.AddUserMessage("Fetch current time then Convert time into Local time format. If current time is AM format then switch on lamp id = 1, Get status of all the lamps");
+
+                while (true)
+                {
+                    // Start or continue chat based on the chat history
+                    ChatMessageContent result = await chatCompletionService.GetChatMessageContentAsync(history, openAIPromptExecutionSettings, kernel);
+                    if (result.Content is not null)
+                    {
+                        Console.Write(result.Content);
+                    }
+
+                    // Get function calls from the chat message content and quit the chat loop if no function calls are found.
+                    IEnumerable<FunctionCallContent> functionCalls = FunctionCallContent.GetFunctionCalls(result);
+                    if (!functionCalls.Any())
+                    {
+                        break;
+                    }
+
+                    // Preserving the original chat message content with function calls in the chat history.
+                    history.Add(result);
+
+                    // Iterating over the requested function calls and invoking them
+                    foreach (FunctionCallContent functionCall in functionCalls)
+                    {
+                        try
+                        {
+                            // Invoking the function
+                            FunctionResultContent resultContent = await functionCall.InvokeAsync(kernel);
+
+                            // Adding the function result to the chat history
+                            history.Add(resultContent.ToChatMessage());
+                        }
+                        catch (Exception ex)
+                        {
+                            // Adding function exception to the chat history.
+                            history.Add(new FunctionResultContent(functionCall, ex).ToChatMessage());
+                            // or
+                            //chatHistory.Add(new FunctionResultContent(functionCall, "Error details that LLM can reason about.").ToChatMessage());
+                        }
+                    }
+
+                    Console.WriteLine();
+                }
+
+
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("---- AutoInvoke Kernel function ------");
+
+                openAIPromptExecutionSettings = new()
+                {
+                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions // Auto invoke kernel functions
+                    //ToolCallBehavior = ToolCallBehavior.EnableKernelFunctions // Function callling need to use when you are looking for planner
+                };
 
                 Console.WriteLine("Ask questions to use the Time Plugin such as:\n" +
                   "- What time is it?");

@@ -3,8 +3,8 @@
 ### Native plugin - Time Plugins folder (TimeInformationPlugin.cs)
 ### Native plugin - Light Plugins in folder (LightsPlugin.cs)
 ### Open api specification plugin  (Azure function app swagger url- SemanticKernelAgent.OpenAPI.Plugins project)
-### Planner - planner will fetch the current time and according to if time is PM then it will switch on all lights.
-### Persona - User 
+### Planner (function calling) - planner will fetch the current time and according to if time is PM then it will switch on table lamp.
+### Persona - User, system(Assistant)
 
 ```
 dotnet add package Microsoft.SemanticKernel
